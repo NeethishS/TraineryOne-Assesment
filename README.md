@@ -8,7 +8,7 @@ Rather than building a sprawling HR suite with non-essential modules, this appli
 
 ## What I Built
 
-The application consists of two main experiences connected by client-side routing:
+The application consists of three main experiences connected by client-side routing:
 
 1. **Employee Directory**: A searchable table view of all 20 employees, complete with real-time filtering across name, employee ID, role, and department.
 2. **Employee Profile Details**: A detailed record view showing employment information, contact details, reporting managers, direct reports, and a dynamic **Organization Path**.
@@ -94,9 +94,10 @@ src/
    ```
    Open `http://localhost:5173/` (or the port indicated in your terminal).
 
-4. Build for production:
+4. Build and preview production distribution:
    ```bash
    npm run build
+   npm run preview
    ```
 
 ## Design Decisions
@@ -108,7 +109,7 @@ src/
 
 ## Signature Features
 
-- **Organization Path**: Walk up the management chain starting from the current employee until reaching the root executive (`managerId === null`). This provides an immediate 1-second view of organizational context.
+- **Organization Path**: Walk up the management chain starting from the current employee until reaching the root executive (`managerId === null`). This makes the employee’s position in the reporting hierarchy easier to understand.
 - **In-Canvas Zoom & Fit Controls**: Dedicated scale controls (`Zoom Out`, `Zoom In`, `Fit`) that scale only the org chart container, preserving page layouts while allowing large multi-level teams to fit comfortably on screen.
 
 ## What Could Be Improved

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { buildHierarchy } from '../../utils/hierarchy';
 import OrgNodeCard from './OrgNodeCard';
 import { Maximize2, Minimize2, GitFork, ZoomIn, ZoomOut, Scan } from 'lucide-react';
@@ -92,6 +92,25 @@ export default function OrgChart({ employees }) {
     return set;
   });
 
+  // Scroll container to center the top CEO / root executive node horizontally
+  const centerCeo = () => {
+    if (canvasContainerRef.current) {
+      const container = canvasContainerRef.current;
+      const targetScrollLeft = (container.scrollWidth - container.clientWidth) / 2;
+      container.scrollTo({
+        left: Math.max(0, targetScrollLeft),
+        top: 0,
+        behavior: 'smooth',
+      });
+    }
+  };
+
+  // Center CEO node on initial mount
+  useEffect(() => {
+    const timer = setTimeout(centerCeo, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
   const toggleExpand = (employeeId) => {
     setExpandedNodes((prev) => {
       const next = new Set(prev);
@@ -107,10 +126,12 @@ export default function OrgChart({ employees }) {
   const expandAll = () => {
     const all = new Set(employees.map((e) => e.id));
     setExpandedNodes(all);
+    setTimeout(centerCeo, 50);
   };
 
   const collapseAll = () => {
     setExpandedNodes(new Set());
+    setTimeout(centerCeo, 50);
   };
 
   // Zoom In handler (+10%, max 1.25)
@@ -123,7 +144,7 @@ export default function OrgChart({ employees }) {
     setZoomScale((prev) => Math.max(0.5, Math.round((prev - 0.1) * 100) / 100));
   };
 
-  // Fit handler — calculates optimal scale so hierarchy fits in view container comfortably
+  // Fit handler — calculates optimal scale so hierarchy fits in view container comfortably and centers CEO
   const handleFit = () => {
     if (!canvasContainerRef.current || !canvasTreeRef.current) return;
     const containerWidth = canvasContainerRef.current.clientWidth - 48; // padding offset
@@ -135,6 +156,8 @@ export default function OrgChart({ employees }) {
       const clampedScale = Math.max(0.5, Math.min(1.0, Math.round(computedRatio * 100) / 100));
       setZoomScale(clampedScale);
     }
+    // Always center the top CEO executive node in the viewport
+    setTimeout(centerCeo, 50);
   };
 
   if (!employees || employees.length === 0) {
